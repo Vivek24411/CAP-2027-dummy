@@ -190,10 +190,12 @@ export function Constellation({ image }: { image: ImageAsset }) {
     };
 
     // ── Pointer ──────────────────────────────────────────────────────────────
+    // Screen → canvas pixels. The layer may be scaled/translated (hero parallax and scroll
+    // zoom), so divide by the on-screen size rather than assuming 1:1.
     const moveTo = (event: PointerEvent) => {
       const rect = host.getBoundingClientRect();
-      target.x = event.clientX - rect.left;
-      target.y = event.clientY - rect.top;
+      target.x = ((event.clientX - rect.left) * width) / (rect.width || 1);
+      target.y = ((event.clientY - rect.top) * height) / (rect.height || 1);
       if (activity <= 0.001) {
         pos.x = target.x;
         pos.y = target.y;

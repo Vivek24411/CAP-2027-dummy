@@ -18,6 +18,7 @@ const sectionIdFor = (href: string) => (href === "/" ? "home" : (href.split("#")
 // Floating pill navbar. Transparent at the top of the page; after 40px of scroll it gets a
 // blurred surface, a hairline border and gets slightly shorter. A small dot slides under
 // the link of the section in view. Below lg the links move into a full-screen menu.
+// Drops in once on page load, just after the hero intro starts (see globals.css).
 export function NavbarClient({ links, cta }: { links: NavLink[]; cta: NavLink }) {
   const scrolled = useScrolled(40);
   const menu = useDisclosure();
@@ -48,7 +49,7 @@ export function NavbarClient({ links, cta }: { links: NavLink[]; cta: NavLink })
 
   return (
     <>
-      <header className="fixed inset-x-0 top-3 z-50 px-4 md:top-5">
+      <header data-nav-intro className="fixed inset-x-0 top-3 z-50 px-4 md:top-5">
         <nav
           aria-label="Main"
           className={cn(

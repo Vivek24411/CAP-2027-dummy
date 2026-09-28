@@ -138,37 +138,178 @@
 
 /* ------------------------------------------------------------------------------------
    Hero intro on page load. Pure CSS so it starts with the first paint instead of
-   waiting for JavaScript (the subtitle is the largest element on first load, so this
-   keeps LCP fast): the tag fades in, each heading line slides up out of its mask 80ms
-   apart, then the subtitle and button fade up 200ms after the last line starts.
+   waiting for JavaScript. One ~2.4s sequence, like a camera pulling back:
+     · the scene starts dark and pushed in, then eases out to rest (veil + scene)
+     · the tag and "CAMPUS" track in from wide letter-spacing, the stars spin in
+     · "AMBASSADOR" materialises letter by letter (blur → sharp), then "PROGRAM"
+     · a thin horizon flare draws under the title
+     · the subtitle, buttons and the bottom meta row rise in last
    `--i` is each item's position (set inline in HeroSection.tsx).
    ------------------------------------------------------------------------------------ */
 @media (prefers-reduced-motion: no-preference) {
-  [data-hero="tag"] {
-    animation: hero-fade 600ms var(--ease-out) 100ms both;
+  [data-hero="veil"] {
+    animation: hero-veil 2200ms cubic-bezier(0.4, 0, 0.2, 1) both;
   }
-  [data-hero="line"] {
-    animation: hero-line 900ms var(--ease-out) calc(250ms + var(--i, 0) * 80ms) both;
+  [data-hero="scene"] {
+    animation: hero-scene 2800ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  [data-hero="tag"] {
+    animation: hero-blur-in 900ms var(--ease-out) 200ms both;
+  }
+  [data-hero="track"] {
+    animation: hero-track 1400ms var(--ease-out) calc(350ms + var(--i, 0) * 900ms) both;
+  }
+  [data-hero="star"] {
+    animation: hero-star 1100ms cubic-bezier(0.34, 1.56, 0.64, 1) calc(500ms + var(--i, 0) * 90ms)
+      both;
+  }
+  [data-hero="char"] {
+    animation: hero-char 1100ms var(--ease-out) calc(560ms + var(--i, 0) * 55ms) both;
+  }
+  [data-hero="flare"] {
+    animation: hero-flare 1600ms var(--ease-out) 1450ms both;
   }
   [data-hero="after"] {
-    animation: hero-rise 800ms var(--ease-out) calc(610ms + var(--i, 0) * 80ms) both;
+    animation: hero-rise 1000ms var(--ease-out) calc(1150ms + var(--i, 0) * 120ms) both;
+  }
+  [data-hero="meta"] {
+    animation: hero-fade 1200ms var(--ease-out) 1900ms both;
+  }
+  [data-nav-intro] {
+    animation: nav-drop 1000ms var(--ease-out) 900ms both;
   }
 }
 
+@keyframes hero-veil {
+  from {
+    opacity: 0.94;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes hero-scene {
+  from {
+    transform: scale(1.16);
+  }
+}
 @keyframes hero-fade {
   from {
     opacity: 0;
   }
 }
-@keyframes hero-line {
+@keyframes hero-blur-in {
   from {
-    transform: translateY(105%);
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(8px);
+  }
+}
+@keyframes hero-track {
+  from {
+    opacity: 0;
+    letter-spacing: 0.6em;
+    filter: blur(10px);
+  }
+}
+@keyframes hero-star {
+  from {
+    opacity: 0;
+    transform: scale(0) rotate(-180deg);
+  }
+}
+@keyframes hero-char {
+  from {
+    opacity: 0;
+    filter: blur(16px);
+    transform: translate3d(0, 0.28em, 0) scale(0.92);
+  }
+}
+@keyframes hero-flare {
+  from {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  45% {
+    opacity: 1;
   }
 }
 @keyframes hero-rise {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    filter: blur(6px);
+    transform: translateY(18px);
+  }
+}
+@keyframes nav-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+/* Shooting stars: each crosses the sky once per cycle (the first ~6% of it) and waits out
+   the rest. `--angle`, `--dur` and `--delay` are set inline per star in HeroBackground.tsx. */
+@media (prefers-reduced-motion: no-preference) {
+  .shooting-star {
+    rotate: var(--angle, -24deg);
+    animation: shoot var(--dur, 11s) linear var(--delay, 2.4s) infinite;
+  }
+}
+.shooting-star {
+  position: absolute;
+  width: 150px;
+  height: 1px;
+  opacity: 0;
+  transform-origin: left center;
+  background: linear-gradient(90deg, #fff, rgb(169 203 255 / 0.5) 20%, transparent);
+  border-radius: 999px;
+}
+@keyframes shoot {
+  0% {
+    opacity: 0;
+    transform: translateX(0) scaleX(0.2);
+  }
+  1% {
+    opacity: 1;
+  }
+  6% {
+    opacity: 0;
+    transform: translateX(-420px) scaleX(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-420px) scaleX(1);
+  }
+}
+
+/* Scroll cue: a light runs down a hairline, over and over. */
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-cue::after {
+    animation: scroll-cue 2.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  }
+}
+.scroll-cue::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent, #fff 50%, transparent);
+  transform: translateY(-100%);
+}
+@keyframes scroll-cue {
+  to {
+    transform: translateY(100%);
+  }
+}
+
+/* Star field twinkle (What is E-Summit). */
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
   }
 }
 

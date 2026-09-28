@@ -9,6 +9,8 @@ export const hero: HeroContent = {
     "Where you'll be pivotal in promoting our event, broadening our reach, and enhancing our platform's success.",
   // TODO: point at the real registration page once it exists.
   cta: { label: "Register Now", href: "/apply" },
+  secondaryCta: { label: "How it works", href: "/#process" },
+  location: "IIT Roorkee · 29.86° N, 77.89° E",
   // Its stars light up on hover (see components/sections/hero/constellation).
   image: {
     src: "/images/hero/night-sky-hd.jpg",

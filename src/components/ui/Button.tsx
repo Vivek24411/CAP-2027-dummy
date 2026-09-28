@@ -5,11 +5,12 @@ import { cn } from "@/lib/utils";
 type Variant = "primary" | "secondary";
 type Size = "md" | "lg";
 
-// primary   → solid accent; a touch brighter and 1px higher on hover, back down when pressed
+// primary   → solid accent; a touch brighter and 1px higher on hover (with a sheen sweeping
+//             across), back down when pressed
 // secondary → ghost with a hairline border
 const variants: Record<Variant, string> = {
   primary:
-    "bg-accent-fill text-white hover:bg-accent-fill-hover hover:-translate-y-px active:translate-y-0",
+    "relative overflow-hidden bg-accent-fill text-white hover:bg-accent-fill-hover hover:-translate-y-px active:translate-y-0 before:pointer-events-none before:absolute before:inset-y-0 before:-left-1/2 before:w-1/3 before:skew-x-[-20deg] before:bg-linear-to-r before:from-transparent before:via-white/25 before:to-transparent before:transition-[left] before:duration-700 before:ease-out hover:before:left-[130%]",
   secondary:
     "border border-line-strong text-foreground hover:border-white/30 hover:bg-white/[0.04] active:bg-white/[0.02]",
 };

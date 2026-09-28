@@ -9,5 +9,9 @@ export type HeroContent = {
   subtitle: string;
   description: string;
   cta: NavLink;
+  // Quieter text link next to the main button.
+  secondaryCta: NavLink;
+  // Small print along the bottom of the hero, e.g. where the summit happens.
+  location: string;
   image: ImageAsset;
 };

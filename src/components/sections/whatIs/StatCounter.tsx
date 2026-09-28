@@ -12,7 +12,10 @@ export function StatCounter({ stat }: { stat: Stat }) {
 
   return (
     <div className="flex flex-col items-center text-center text-white">
-      <p ref={ref} className="text-4xl leading-none font-bold tabular-nums md:text-[3rem]">
+      <p
+        ref={ref}
+        className="bg-linear-to-b from-white to-[#9cc8ff] bg-clip-text text-5xl leading-none font-semibold tracking-[-0.03em] text-transparent tabular-nums md:text-[4rem]"
+      >
         <span className="sr-only">
           {stat.value}
           {stat.suffix}
@@ -24,7 +27,9 @@ export function StatCounter({ stat }: { stat: Stat }) {
           {stat.suffix}
         </span>
       </p>
-      <p className="mt-1 text-lg leading-tight md:text-[1.75rem]">{stat.label}</p>
+      <p className="text-secondary mt-3 text-xs tracking-[0.18em] uppercase md:text-[0.8125rem]">
+        {stat.label}
+      </p>
     </div>
   );
 }
