@@ -1,0 +1,241 @@
+@import "tailwindcss";
+
+/* Hidden-until-revealed states are written as `js:...` so they only apply once the inline
+   script in layout.tsx has added the `js` class. Without JavaScript, everything shows. */
+@custom-variant js (&:where(.js, .js *));
+
+/* ------------------------------------------------------------------------------------
+   Design tokens. The site is dark-only. Change a value here and it updates everywhere:
+   each token is also exposed to Tailwind below (bg-surface, text-secondary, ...).
+   ------------------------------------------------------------------------------------ */
+:root {
+  /* Surfaces, darkest to lightest */
+  --background: #05070d;
+  --surface: #0b0f19;
+  --raised: #111827;
+
+  /* Text. All three pass WCAG AA on every surface above. */
+  --foreground: #e8ebf2;
+  --secondary: #9aa3b5;
+  --muted: #788195;
+
+  /* The single accent. `accent` is for text, dots and active states;
+     `accent-fill` / `accent-fill-hover` are deeper so white button text passes AA. */
+  --accent: #0285e2;
+  --accent-fill: #0270c0;
+  --accent-fill-hover: #0277cc;
+
+  /* Hairlines */
+  --line: rgb(255 255 255 / 0.07);
+  --line-strong: rgb(255 255 255 / 0.14);
+
+  /* Motion durations (the easing curve lives in @theme below as --ease-out) */
+  --duration-hover: 200ms;
+  --duration-reveal: 800ms;
+}
+
+/* Plain-value tokens. `static` always emits them to :root, so they also work in var(). */
+@theme static {
+  /* rounded-card → 12px. Full pill radius (rounded-full) is only for buttons and tags. */
+  --radius-card: 12px;
+  /* py-section → the standard vertical padding for a page section */
+  --spacing-section: clamp(80px, 10vw, 160px);
+  /* ease-out → weighty, no overshoot */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-raised: var(--raised);
+  --color-foreground: var(--foreground);
+  --color-secondary: var(--secondary);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-fill: var(--accent-fill);
+  --color-accent-fill-hover: var(--accent-fill-hover);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
+  /* Fonts (loaded with next/font in layout.tsx) */
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-instrument-serif);
+  --font-condensed: var(--font-saira-condensed);
+
+  --animate-marquee: marquee var(--marquee-duration, 40s) linear infinite;
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+}
+
+/* Body copy: 15px on phones, 16px from md, comfortable line length. */
+@utility text-body {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  @media (width >= 48rem) {
+    font-size: 1rem;
+  }
+}
+
+/* Slightly larger copy for card descriptions and quotes. */
+@utility text-body-lg {
+  font-size: 1rem;
+  line-height: 1.6;
+  @media (width >= 48rem) {
+    font-size: 1.0625rem;
+  }
+}
+
+@utility measure {
+  max-width: 62ch;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Keeps anchor targets (#faqs, ...) clear of the fixed navbar. */
+    scroll-padding-top: 6rem;
+    color-scheme: dark;
+    background: var(--background);
+  }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans), sans-serif;
+    /* Decorative glows may extend past the edges; never let them cause sideways scroll. */
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+
+  /* One visible focus ring for every interactive element. */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  /* Lenis does the smoothing when it's on; native smooth scroll would fight it. */
+  html.lenis,
+  html[data-motion] {
+    scroll-behavior: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+/* ------------------------------------------------------------------------------------
+   Hero intro on page load. Pure CSS so it starts with the first paint instead of
+   waiting for JavaScript (the subtitle is the largest element on first load, so this
+   keeps LCP fast): the tag fades in, each heading line slides up out of its mask 80ms
+   apart, then the subtitle and button fade up 200ms after the last line starts.
+   `--i` is each item's position (set inline in HeroSection.tsx).
+   ------------------------------------------------------------------------------------ */
+@media (prefers-reduced-motion: no-preference) {
+  [data-hero="tag"] {
+    animation: hero-fade 600ms var(--ease-out) 100ms both;
+  }
+  [data-hero="line"] {
+    animation: hero-line 900ms var(--ease-out) calc(250ms + var(--i, 0) * 80ms) both;
+  }
+  [data-hero="after"] {
+    animation: hero-rise 800ms var(--ease-out) calc(610ms + var(--i, 0) * 80ms) both;
+  }
+}
+
+@keyframes hero-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes hero-line {
+  from {
+    transform: translateY(105%);
+  }
+}
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+/* Earn Coins: a slow bob for the coin artwork and a breathing glow behind the gold coin.
+   Individual `translate`/`rotate` properties, so they never clash with GSAP's transforms. */
+@media (prefers-reduced-motion: no-preference) {
+  .coin-float {
+    animation: coin-float 7s ease-in-out infinite;
+  }
+  .coin-glow {
+    animation: coin-glow 5s ease-in-out infinite;
+  }
+}
+@keyframes coin-float {
+  0%,
+  100% {
+    translate: 0 0;
+    rotate: 0deg;
+  }
+  50% {
+    translate: 0 -14px;
+    rotate: -2deg;
+  }
+}
+@keyframes coin-glow {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ------------------------------------------------------------------------------------
+   Reveal starting states. Scoped under .js (set by the inline script in layout.tsx) and
+   no-preference motion, so without JS or with reduced motion everything is visible.
+   GSAP animates from these to the final state and leaves the final values inline.
+   ------------------------------------------------------------------------------------ */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-reveal="fade-up"] {
+    opacity: 0;
+  }
+  .js [data-heading-part] {
+    transform: translateY(110%);
+  }
+  /* Card images wipe in from the side they sit on (phones: always from the left) */
+  .js [data-reveal-clip] {
+    clip-path: inset(0 100% 0 0);
+  }
+  @media (width >= 64rem) {
+    .js [data-reveal-clip="right"] {
+      clip-path: inset(0 0 0 100%);
+    }
+  }
+
+  /* Process timeline: steps the line hasn't reached yet */
+  .js [data-step]:not([data-active]) [data-step-dot] {
+    border-color: var(--line-strong);
+  }
+  .js [data-step]:not([data-active]) [data-step-dot] > span {
+    background: var(--muted);
+  }
+  .js [data-step]:not([data-active]) [data-step-title] {
+    color: var(--secondary);
+  }
+  .js [data-step]:not([data-active]) [data-step-text] {
+    color: var(--muted);
+  }
+}
